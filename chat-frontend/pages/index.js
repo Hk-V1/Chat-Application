@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('https://your-backend-app.onrender.com'); 
+// 🔁 Replace this URL with your actual Render backend URL
+const socket = io('https://chat-application-gmj4.onrender.com');
+
 export default function Home() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
@@ -11,11 +13,12 @@ export default function Home() {
       setChat((prev) => [...prev, data]);
     });
 
-    return () => socket.disconnect();
+    return () => socket.disconnect(); // cleanup on unmount
   }, []);
 
   const sendMessage = () => {
     if (!message.trim()) return;
+
     const msg = { text: message, sender: 'You' };
     setChat((prev) => [...prev, msg]);
     socket.emit('chat-message', msg);
@@ -23,21 +26,51 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 20, fontFamily: 'Arial' }}>
       <h1>💬 Real-Time Chat</h1>
-      <div style={{ marginBottom: 10, height: 200, overflowY: 'auto', border: '1px solid #ccc', padding: 10 }}>
+      <div
+        style={{
+          marginBottom: 10,
+          height: 300,
+          overflowY: 'auto',
+          border: '1px solid #ccc',
+          borderRadius: 6,
+          padding: 10,
+          background: '#fafafa',
+        }}
+      >
         {chat.map((msg, i) => (
-          <div key={i}><strong>{msg.sender}:</strong> {msg.text}</div>
+          <div key={i} style={{ marginBottom: 6 }}>
+            <strong>{msg.sender}:</strong> {msg.text}
+          </div>
         ))}
       </div>
       <input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-        placeholder="Type a message"
-        style={{ width: '80%', marginRight: 10 }}
+        placeholder="Type a message..."
+        style={{
+          width: '70%',
+          padding: '8px',
+          borderRadius: 4,
+          border: '1px solid #ccc',
+          marginRight: 10,
+        }}
       />
-      <button onClick={sendMessage}>Send</button>
+      <button
+        onClick={sendMessage}
+        style={{
+          padding: '8px 16px',
+          borderRadius: 4,
+          background: '#0070f3',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+      >
+        Send
+      </button>
     </div>
   );
 }
